@@ -89,15 +89,23 @@ io.on(
 );
 
 // ======================
+// PORT
+// ======================
+
+const PORT = process.env.PORT || 5001;
+
+// ======================
+// ROOT
+// ======================
+
+app.get("/", (req, res) => {
+  res.send("SMART VENDING MACHINE API RUNNING");
+});
+
+// ======================
 // SERVER
 // ======================
 
-server.listen(
-  5001,
-
-  "0.0.0.0",
-
-  () => {
-    console.log("SERVER RUNNING");
-  },
-);
+server.listen(PORT, () => {
+  console.log("SERVER RUNNING ON PORT " + PORT);
+});
