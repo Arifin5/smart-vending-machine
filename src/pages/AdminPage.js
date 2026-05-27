@@ -36,7 +36,7 @@ function AdminPage() {
   }, []);
 
   const loadProducts = async () => {
-    const response = await axios.get("http://192.168.1.8:5001/products");
+    const response = await axios.get("https://smart-vending-machine-production.up.railway.app/products");
 
     setProducts(response.data);
   };

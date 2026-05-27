@@ -14,7 +14,7 @@ function RegisterPage() {
   const register = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.1.8:5001/auth/register",
+        "https://smart-vending-machine-production.up.railway.app/auth/register",
 
         {
           email,

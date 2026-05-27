@@ -65,11 +65,11 @@ router.post(
         })),
 
         callbacks: {
-          finish: "http://localhost:3000",
+          finish: "https://smart-vending-machine-production.up.railway.app",
         },
 
         notification_url:
-          "https://0fe3-114-124-247-246.ngrok-free.app",
+          "https://smart-vending-machine-production.up.railway.app/midtrans-callback",
       };
 
       // ======================
@@ -86,17 +86,17 @@ router.post(
         db.query(
           `
           INSERT INTO transactions
-(
-  order_id,
-  product_id,
-  product_name,
-  quantity,
-  total,
-  status
-)
+          (
+            order_id,
+            product_id,
+            product_name,
+            quantity,
+            total,
+            status
+          )
 
-           VALUES (?, ?, ?, ?, ?, ?)
-    `,
+          VALUES (?, ?, ?, ?, ?, ?)
+          `,
 
           [orderId, item.id, item.name, 1, item.price, "pending"],
         );

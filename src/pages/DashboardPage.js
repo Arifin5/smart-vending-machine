@@ -42,7 +42,7 @@ function DashboardPage() {
 
   const loadDashboard = async () => {
     try {
-      const response = await axios.get("http://192.168.1.8:5001/dashboard");
+      const response = await axios.get("https://smart-vending-machine-production.up.railway.app/dashboard");
 
       setDashboard(response.data);
     } catch (error) {

@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.1.8:5001/products";
+const BASE_URL = "https://smart-vending-machine-production.up.railway.app/products";
 
 export const getProducts = async () => {
   const response = await fetch(BASE_URL);

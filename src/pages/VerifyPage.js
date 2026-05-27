@@ -14,7 +14,7 @@ function VerifyPage() {
       const email = localStorage.getItem("verifyEmail");
 
       const response = await axios.post(
-        "http://192.168.1.8:5001/auth/verify",
+        "https://smart-vending-machine-production.up.railway.app/auth/verify",
 
         {
           email,

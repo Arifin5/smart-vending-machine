@@ -4,7 +4,7 @@ export const createPayment = async (
   total,
 ) => {
   const response = await fetch(
-    "http://192.168.1.8:5001/payment",
+    "https://smart-vending-machine-production.up.railway.app/payment",
 
     {
       method: "POST",

@@ -1,5 +1,5 @@
 import io from "socket.io-client";
 
-const socket = io("http://192.168.1.8:5001");
+const socket = io("https://smart-vending-machine-production.up.railway.app");
 
 export default socket;

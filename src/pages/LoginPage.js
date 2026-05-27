@@ -14,7 +14,7 @@ function LoginPage() {
   const login = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.1.8:5001/auth/login",
+        "https://smart-vending-machine-production.up.railway.app/auth/login",
 
         {
           email,

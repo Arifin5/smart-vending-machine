@@ -25,7 +25,7 @@ function TransactionPage() {
     customEndDate = endDate,
   ) => {
     try {
-      let url = "http://192.168.1.8:5001/transactions";
+      let url = "https://smart-vending-machine-production.up.railway.app/transactions";
 
       // ======================
       // FILTER DATE
