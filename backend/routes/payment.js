@@ -68,7 +68,7 @@ router.post(
         // QRIS ONLY
         // ======================
 
-        enabled_payments: ["qris"],
+        enabled_payments: ["gopay", "qris", "shopeepay"],
 
         // ======================
         // ITEMS
