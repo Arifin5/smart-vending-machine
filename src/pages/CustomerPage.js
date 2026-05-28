@@ -1,12 +1,12 @@
 import React from "react";
 
+import axios from "axios";
+
 import ProductCard from "../components/ProductCard";
 
 import Cart from "../components/Cart";
 
 import { getProducts } from "../services/product";
-
-import { createPayment } from "../services/payment";
 
 import socket from "../socket";
 
@@ -16,8 +16,6 @@ function CustomerPage() {
   const [cart, setCart] = React.useState([]);
 
   const [loading, setLoading] = React.useState(false);
-
-  const [paymentOpen, setPaymentOpen] = React.useState(false);
 
   const [pendingPopup, setPendingPopup] = React.useState(false);
 
@@ -56,13 +54,9 @@ function CustomerPage() {
   // ======================
 
   React.useEffect(() => {
-    socket.on(
-      "stockUpdated",
-
-      () => {
-        loadProducts();
-      },
-    );
+    socket.on("stockUpdated", () => {
+      loadProducts();
+    });
 
     return () => {
       socket.off("stockUpdated");
@@ -98,24 +92,22 @@ function CustomerPage() {
   // ======================
 
   const checkout = async () => {
-    if (paymentOpen) {
-      alert("Payment masih berjalan");
-
-      return;
-    }
-
-    if (cart.length === 0) {
-      alert("Keranjang kosong");
-
-      return;
-    }
-
     try {
+      // ======================
+      // EMPTY CART
+      // ======================
+
+      if (cart.length === 0) {
+        alert("Keranjang kosong");
+
+        return;
+      }
+
       setLoading(true);
 
-      setPaymentOpen(true);
-
-      setPendingPopup(true);
+      // ======================
+      // TOTAL
+      // ======================
 
       const total = cart.reduce(
         (sum, item) => sum + Number(item.price),
@@ -123,63 +115,61 @@ function CustomerPage() {
         0,
       );
 
-      const payment = await createPayment(cart, total);
+      // ======================
+      // CREATE PAYMENT
+      // ======================
 
-      window.snap.pay(
-        payment.token,
+      const response = await axios.post(
+        "https://smart-vending-machine-production.up.railway.app/payment",
 
         {
-          onSuccess: function () {
-            setLoading(false);
+          cart,
 
-            setPaymentOpen(false);
-
-            setPendingPopup(false);
-
-            setSuccessPopup(true);
-
-            setCart([]);
-
-            loadProducts();
-
-            setTimeout(
-              () => {
-                setSuccessPopup(false);
-              },
-
-              3000,
-            );
-          },
-
-          onError: function () {
-            alert("Payment gagal");
-
-            setLoading(false);
-
-            setPaymentOpen(false);
-
-            setPendingPopup(false);
-          },
-
-          onClose: function () {
-            setLoading(false);
-
-            setPaymentOpen(false);
-
-            setPendingPopup(false);
-          },
+          total,
         },
       );
+
+      console.log(response.data);
+
+      // ======================
+      // MIDTRANS SNAP POPUP
+      // ======================
+
+      if (response.data.token) {
+        window.snap.pay(
+          response.data.token,
+
+          {
+            onSuccess: function () {
+              alert("Pembayaran berhasil");
+
+              setCart([]);
+
+              loadProducts();
+            },
+
+            onPending: function () {
+              alert("Menunggu pembayaran");
+            },
+
+            onError: function () {
+              alert("Pembayaran gagal");
+            },
+
+            onClose: function () {
+              console.log("Popup ditutup");
+            },
+          },
+        );
+      } else {
+        alert("QRIS gagal dibuat");
+      }
     } catch (error) {
       console.log(error);
 
-      alert("Payment Error");
-
+      alert("Checkout gagal");
+    } finally {
       setLoading(false);
-
-      setPaymentOpen(false);
-
-      setPendingPopup(false);
     }
   };
 
@@ -282,6 +272,7 @@ function CustomerPage() {
       <div
         style={{
           width: "100%",
+
           maxWidth: 1700,
         }}
       >

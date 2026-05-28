@@ -23,7 +23,7 @@ router.get(
         if (err) {
           console.log(err);
 
-          return;
+          return res.status(500).json(err);
         }
 
         res.json(result);
@@ -40,19 +40,7 @@ router.post(
   "/",
 
   (req, res) => {
-    const {
-      name,
-
-      price,
-
-      stock,
-
-      category,
-
-      image,
-
-      slot_code,
-    } = req.body;
+    const { name, price, stock, category, image, slot_code } = req.body;
 
     db.query(
       `
@@ -75,8 +63,16 @@ router.post(
         if (err) {
           console.log(err);
 
-          return;
+          return res.status(500).json(err);
         }
+
+        // ======================
+        // REALTIME UPDATE
+        // ======================
+
+        const io = req.app.get("io");
+
+        io.emit("stockUpdated");
 
         res.json(result);
       },
@@ -92,19 +88,7 @@ router.put(
   "/:id",
 
   (req, res) => {
-    const {
-      name,
-
-      price,
-
-      stock,
-
-      category,
-
-      image,
-
-      slot_code,
-    } = req.body;
+    const { name, price, stock, category, image, slot_code } = req.body;
 
     db.query(
       `
@@ -133,8 +117,16 @@ router.put(
         if (err) {
           console.log(err);
 
-          return;
+          return res.status(500).json(err);
         }
+
+        // ======================
+        // REALTIME UPDATE
+        // ======================
+
+        const io = req.app.get("io");
+
+        io.emit("stockUpdated");
 
         res.json(result);
       },
@@ -163,8 +155,16 @@ router.delete(
         if (err) {
           console.log(err);
 
-          return;
+          return res.status(500).json(err);
         }
+
+        // ======================
+        // REALTIME UPDATE
+        // ======================
+
+        const io = req.app.get("io");
+
+        io.emit("stockUpdated");
 
         res.json(result);
       },

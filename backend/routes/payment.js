@@ -25,7 +25,15 @@ router.post(
 
   async (req, res) => {
     try {
-      const { cart, total } = req.body;
+      const {
+        cart,
+
+        total,
+      } = req.body;
+
+      // ======================
+      // VALIDATION
+      // ======================
 
       if (!cart || cart.length === 0) {
         return res.status(400).json({
@@ -38,6 +46,10 @@ router.post(
           message: "Total tidak valid",
         });
       }
+
+      // ======================
+      // ORDER ID
+      // ======================
 
       const orderId = "VM-" + Date.now();
 
@@ -52,7 +64,15 @@ router.post(
           gross_amount: total,
         },
 
-        enabled_payments: ["gopay"],
+        // ======================
+        // QRIS ONLY
+        // ======================
+
+        enabled_payments: ["qris"],
+
+        // ======================
+        // ITEMS
+        // ======================
 
         item_details: cart.map((item) => ({
           id: item.id,
@@ -64,13 +84,15 @@ router.post(
           name: item.name,
         })),
 
-        callbacks: {
-          finish: "https://smart-vending-machine-production.up.railway.app",
-        },
+        // ======================
+        // CALLBACK
+        // ======================
 
         notification_url:
           "https://smart-vending-machine-production.up.railway.app/midtrans-callback",
       };
+
+      console.log(parameter);
 
       // ======================
       // CREATE TRANSACTION
@@ -79,7 +101,7 @@ router.post(
       const transaction = await snap.createTransaction(parameter);
 
       // ======================
-      // SAVE PENDING TRANSACTION
+      // SAVE PENDING
       // ======================
 
       for (const item of cart) {
@@ -114,9 +136,13 @@ router.post(
         redirect_url: transaction.redirect_url,
       });
     } catch (error) {
-      console.log(error);
+      console.log("PAYMENT ERROR:", error.response?.data || error);
 
-      res.status(500).json(error);
+      res.status(500).json({
+        success: false,
+
+        error,
+      });
     }
   },
 );
