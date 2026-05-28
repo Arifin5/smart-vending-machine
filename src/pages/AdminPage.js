@@ -36,7 +36,9 @@ function AdminPage() {
   }, []);
 
   const loadProducts = async () => {
-    const response = await axios.get("https://smart-vending-machine-production.up.railway.app/products");
+    const response = await axios.get(
+      "https://smart-vending-machine-production.up.railway.app/products",
+    );
 
     setProducts(response.data);
   };
@@ -65,7 +67,7 @@ function AdminPage() {
     }
 
     await axios.post(
-      "http://192.168.1.8:5001/products",
+      "https://smart-vending-machine-production.up.railway.app/products",
 
       form,
     );
@@ -94,7 +96,9 @@ function AdminPage() {
   const deleteProduct = async (id) => {
     if (!window.confirm("Hapus produk?")) return;
 
-    await axios.delete(`http://192.168.1.8:5001/products/${id}`);
+    await axios.delete(
+      `https://smart-vending-machine-production.up.railway.app/products/${id}`,
+    );
 
     loadProducts();
   };
@@ -127,7 +131,7 @@ function AdminPage() {
 
   const updateProduct = async () => {
     await axios.put(
-      `http://192.168.1.8:5001/products/${editingId}`,
+      `https://smart-vending-machine-production.up.railway.app/products/${editingId}`,
 
       form,
     );
