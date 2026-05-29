@@ -7,88 +7,76 @@ const db = require("./db");
 // ======================
 
 const port = new SerialPort({
-  path: "/dev/tty.usbserial",
+  path: "/dev/ttyS1",
 
-  baudRate: 9600,
+  baudRate: 115200,
 });
 
 // ======================
 // OPEN SERIAL
 // ======================
 
-port.on(
-  "open",
+port.on("open", () => {
+  console.log("SERIAL CONNECTED");
+});
 
-  () => {
-    console.log("SERIAL CONNECTED");
-  },
-);
+// ======================
+// READ RESPONSE
+// ======================
+
+port.on("data", (data) => {
+  console.log("RECEIVED:", data.toString());
+
+  console.log("HEX:", data.toString("hex"));
+});
 
 // ======================
 // ERROR SERIAL
 // ======================
 
-port.on(
-  "error",
-
-  (err) => {
-    console.log("SERIAL ERROR:", err.message);
-  },
-);
+port.on("error", (err) => {
+  console.log("SERIAL ERROR:", err.message);
+});
 
 // ======================
 // DISPENSE PRODUCT
 // ======================
 
 const dispenseProduct = (slotCode, io) => {
-  const command = `DISPENSE:${slotCode}\n`;
+  const command = `${slotCode}\n`;
 
-  port.write(
-    command,
+  console.log("SEND:", command);
 
-    (err) => {
-      if (err) {
-        console.log(err);
+  port.write(command, (err) => {
+    if (err) {
+      console.log(err);
 
-        // ======================
-        // LOG ERROR
-        // ======================
+      db.query(
+        `
+        INSERT INTO motor_logs
+        (
+          slot_code,
+          status,
+          error_message
+        )
 
-        db.query(
-          `
-          INSERT INTO motor_logs
-          (
-            slot_code,
-            status,
-            error_message
-          )
+        VALUES (?, ?, ?)
+        `,
+        [slotCode, "error", err.message],
+      );
 
-          VALUES (?, ?, ?)
-          `,
-
-          [slotCode, "error", err.message],
-        );
-
-        // ======================
-        // SOCKET ERROR
-        // ======================
-
-        io.emit(
-          "motorError",
-
-          {
-            slot: slotCode,
-
-            error: err.message,
-          },
-        );
-
-        return;
+      if (io) {
+        io.emit("motorError", {
+          slot: slotCode,
+          error: err.message,
+        });
       }
 
-      console.log("MOTOR BERJALAN:", command);
-    },
-  );
+      return;
+    }
+
+    console.log("MOTOR COMMAND SENT:", command);
+  });
 };
 
 module.exports = {

@@ -4,7 +4,7 @@ const router = express.Router();
 
 const db = require("../db");
 
-const { dispenseProduct } = require("../vendingController");
+// const { dispenseProduct } = require("../vendingController");
 
 // ======================
 // MIDTRANS CALLBACK
@@ -79,26 +79,25 @@ router.post(
             // DISPENSE PRODUCT
             // ======================
 
-            results.forEach((item) => {
-              // kurangi stok
+            const io = req.app.get("io");
 
+            for (const item of results) {
               db.query(
                 `
-                  UPDATE products
+    UPDATE products
 
-                  SET stock =
-                  stock - 1
+    SET stock =
+    stock - 1
 
-                  WHERE id=?
-                  `,
-
+    WHERE id=?
+    `,
                 [item.product_id],
               );
 
-              // motor jalan
-
-              dispenseProduct(item.slot_code);
-            });
+              io.emit("dispense", {
+                slot: item.slot_code,
+              });
+            }
           },
         );
       }

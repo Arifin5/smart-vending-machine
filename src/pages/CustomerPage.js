@@ -58,8 +58,24 @@ function CustomerPage() {
       loadProducts();
     });
 
+    // ======================
+    // DISPENSE COMMAND
+    // ======================
+
+    socket.on(
+      "dispense",
+
+      async (data) => {
+        console.log("DISPENSE:", data.slot);
+
+        alert(`DISPENSE ${data.slot}`);
+      },
+    );
+
     return () => {
       socket.off("stockUpdated");
+
+      socket.off("dispense");
     };
   }, []);
 
